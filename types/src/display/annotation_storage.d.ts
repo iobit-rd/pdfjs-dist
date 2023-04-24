@@ -40,7 +40,14 @@ export class AnnotationStorage {
      * @returns {boolean}
      */
     has(key: string): boolean;
-    getAll(): any;
+    /**
+     * @returns {Object | null}
+     */
+    getAll(): Object | null;
+    /**
+     * @param {Object} obj
+     */
+    setAll(obj: Object): void;
     get size(): number;
     resetModified(): void;
     /**

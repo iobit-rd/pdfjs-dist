@@ -13,13 +13,22 @@
  * limitations under the License.
  */
 
+:root {
+  --highlight-bg-color: rgba(180, 0, 170, 1);
+  --highlight-selected-bg-color: rgba(0, 100, 0, 1);
+}
+
+@media screen and (forced-colors: active) {
+  :root {
+    --highlight-bg-color: Highlight;
+    --highlight-selected-bg-color: ButtonText;
+  }
+}
+
 .textLayer {
   position: absolute;
   text-align: initial;
-  left: 0;
-  top: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
   overflow: hidden;
   opacity: 0.25;
   line-height: 1;
@@ -31,8 +40,7 @@
   z-index: 2;
 }
 
-.textLayer span,
-.textLayer br {
+.textLayer :is(span, br) {
   color: transparent;
   position: absolute;
   white-space: pre;
@@ -50,7 +58,7 @@
 .textLayer .highlight {
   margin: -1px;
   padding: 1px;
-  background-color: rgba(180, 0, 170, 1);
+  background-color: var(--highlight-bg-color);
   border-radius: 4px;
 }
 
@@ -71,7 +79,7 @@
 }
 
 .textLayer .highlight.selected {
-  background-color: rgba(0, 100, 0, 1);
+  background-color: var(--highlight-selected-bg-color);
 }
 
 .textLayer ::-moz-selection {
@@ -95,10 +103,7 @@
 .textLayer .endOfContent {
   display: block;
   position: absolute;
-  left: 0;
-  top: 100%;
-  right: 0;
-  bottom: 0;
+  inset: 100% 0 0;
   z-index: -1;
   cursor: default;
   -webkit-user-select: none;
@@ -118,21 +123,28 @@
   --input-unfocused-border-color: transparent;
   --input-disabled-border-color: transparent;
   --input-hover-border-color: black;
+  --link-outline: none;
 }
 
-@media (forced-colors: active) {
+@media screen and (forced-colors: active) {
   :root {
     --input-focus-border-color: CanvasText;
     --input-unfocused-border-color: ActiveText;
     --input-disabled-border-color: GrayText;
     --input-hover-border-color: Highlight;
+    --link-outline: 1.5px solid LinkText;
   }
-  .annotationLayer .textWidgetAnnotation input:required,
-  .annotationLayer .textWidgetAnnotation textarea:required,
+  .annotationLayer .textWidgetAnnotation :is(input, textarea):required,
   .annotationLayer .choiceWidgetAnnotation select:required,
-  .annotationLayer .buttonWidgetAnnotation.checkBox input:required,
-  .annotationLayer .buttonWidgetAnnotation.radioButton input:required {
+  .annotationLayer
+    .buttonWidgetAnnotation:is(.checkBox, .radioButton)
+    input:required {
     outline: 1.5px solid selectedItem;
+  }
+
+  .annotationLayer .linkAnnotation:hover {
+    -webkit-backdrop-filter: invert(100%);
+            backdrop-filter: invert(100%);
   }
 }
 
@@ -145,6 +157,22 @@
   z-index: 3;
 }
 
+.annotationLayer[data-main-rotation="90"] .norotate {
+  transform: rotate(270deg) translateX(-100%);
+}
+.annotationLayer[data-main-rotation="180"] .norotate {
+  transform: rotate(180deg) translate(-100%, -100%);
+}
+.annotationLayer[data-main-rotation="270"] .norotate {
+  transform: rotate(90deg) translateY(-100%);
+}
+
+.annotationLayer canvas {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
 .annotationLayer section {
   position: absolute;
   text-align: initial;
@@ -153,8 +181,11 @@
   transform-origin: 0 0;
 }
 
-.annotationLayer .linkAnnotation > a,
-.annotationLayer .buttonWidgetAnnotation.pushButton > a {
+.annotationLayer .linkAnnotation {
+  outline: var(--link-outline);
+}
+
+.annotationLayer :is(.linkAnnotation, .buttonWidgetAnnotation.pushButton) > a {
   position: absolute;
   font-size: 1em;
   top: 0;
@@ -163,13 +194,9 @@
   height: 100%;
 }
 
-.annotationLayer .buttonWidgetAnnotation.pushButton > canvas {
-  width: 100%;
-  height: 100%;
-}
-
-.annotationLayer .linkAnnotation > a:hover,
-.annotationLayer .buttonWidgetAnnotation.pushButton > a:hover {
+.annotationLayer
+  :is(.linkAnnotation, .buttonWidgetAnnotation.pushButton)
+  > a:hover {
   opacity: 0.2;
   background: rgba(255, 255, 0, 1);
   box-shadow: 0 2px 10px rgba(255, 255, 0, 1);
@@ -180,13 +207,13 @@
   cursor: pointer;
   width: 100%;
   height: 100%;
+  top: 0;
+  left: 0;
 }
 
-.annotationLayer .textWidgetAnnotation input,
-.annotationLayer .textWidgetAnnotation textarea,
+.annotationLayer .textWidgetAnnotation :is(input, textarea),
 .annotationLayer .choiceWidgetAnnotation select,
-.annotationLayer .buttonWidgetAnnotation.checkBox input,
-.annotationLayer .buttonWidgetAnnotation.radioButton input {
+.annotationLayer .buttonWidgetAnnotation:is(.checkBox, .radioButton) input {
   background-image: var(--annotation-unfocused-field-background);
   border: 2px solid var(--input-unfocused-border-color);
   box-sizing: border-box;
@@ -197,11 +224,11 @@
   width: 100%;
 }
 
-.annotationLayer .textWidgetAnnotation input:required,
-.annotationLayer .textWidgetAnnotation textarea:required,
+.annotationLayer .textWidgetAnnotation :is(input, textarea):required,
 .annotationLayer .choiceWidgetAnnotation select:required,
-.annotationLayer .buttonWidgetAnnotation.checkBox input:required,
-.annotationLayer .buttonWidgetAnnotation.radioButton input:required {
+.annotationLayer
+  .buttonWidgetAnnotation:is(.checkBox, .radioButton)
+  input:required {
   outline: 1.5px solid red;
 }
 
@@ -217,32 +244,30 @@
   resize: none;
 }
 
-.annotationLayer .textWidgetAnnotation input[disabled],
-.annotationLayer .textWidgetAnnotation textarea[disabled],
+.annotationLayer .textWidgetAnnotation :is(input, textarea)[disabled],
 .annotationLayer .choiceWidgetAnnotation select[disabled],
-.annotationLayer .buttonWidgetAnnotation.checkBox input[disabled],
-.annotationLayer .buttonWidgetAnnotation.radioButton input[disabled] {
+.annotationLayer
+  .buttonWidgetAnnotation:is(.checkBox, .radioButton)
+  input[disabled] {
   background: none;
   border: 2px solid var(--input-disabled-border-color);
   cursor: not-allowed;
 }
 
-.annotationLayer .textWidgetAnnotation input:hover,
-.annotationLayer .textWidgetAnnotation textarea:hover,
+.annotationLayer .textWidgetAnnotation :is(input, textarea):hover,
 .annotationLayer .choiceWidgetAnnotation select:hover,
-.annotationLayer .buttonWidgetAnnotation.checkBox input:hover,
-.annotationLayer .buttonWidgetAnnotation.radioButton input:hover {
+.annotationLayer
+  .buttonWidgetAnnotation:is(.checkBox, .radioButton)
+  input:hover {
   border: 2px solid var(--input-hover-border-color);
 }
-.annotationLayer .textWidgetAnnotation input:hover,
-.annotationLayer .textWidgetAnnotation textarea:hover,
+.annotationLayer .textWidgetAnnotation :is(input, textarea):hover,
 .annotationLayer .choiceWidgetAnnotation select:hover,
 .annotationLayer .buttonWidgetAnnotation.checkBox input:hover {
   border-radius: 2px;
 }
 
-.annotationLayer .textWidgetAnnotation input:focus,
-.annotationLayer .textWidgetAnnotation textarea:focus,
+.annotationLayer .textWidgetAnnotation :is(input, textarea):focus,
 .annotationLayer .choiceWidgetAnnotation select:focus {
   background: none;
   border: 2px solid var(--input-focus-border-color);
@@ -250,8 +275,7 @@
   outline: var(--input-focus-outline);
 }
 
-.annotationLayer .buttonWidgetAnnotation.checkBox :focus,
-.annotationLayer .buttonWidgetAnnotation.radioButton :focus {
+.annotationLayer .buttonWidgetAnnotation:is(.checkBox, .radioButton) :focus {
   background-image: none;
   background-color: transparent;
 }
@@ -267,31 +291,31 @@
   outline: var(--input-focus-outline);
 }
 
-.annotationLayer .buttonWidgetAnnotation.checkBox input:checked:before,
-.annotationLayer .buttonWidgetAnnotation.checkBox input:checked:after,
-.annotationLayer .buttonWidgetAnnotation.radioButton input:checked:before {
+.annotationLayer .buttonWidgetAnnotation.checkBox input:checked::before,
+.annotationLayer .buttonWidgetAnnotation.checkBox input:checked::after,
+.annotationLayer .buttonWidgetAnnotation.radioButton input:checked::before {
   background-color: CanvasText;
   content: "";
   display: block;
   position: absolute;
 }
 
-.annotationLayer .buttonWidgetAnnotation.checkBox input:checked:before,
-.annotationLayer .buttonWidgetAnnotation.checkBox input:checked:after {
+.annotationLayer .buttonWidgetAnnotation.checkBox input:checked::before,
+.annotationLayer .buttonWidgetAnnotation.checkBox input:checked::after {
   height: 80%;
   left: 45%;
   width: 1px;
 }
 
-.annotationLayer .buttonWidgetAnnotation.checkBox input:checked:before {
+.annotationLayer .buttonWidgetAnnotation.checkBox input:checked::before {
   transform: rotate(45deg);
 }
 
-.annotationLayer .buttonWidgetAnnotation.checkBox input:checked:after {
+.annotationLayer .buttonWidgetAnnotation.checkBox input:checked::after {
   transform: rotate(-45deg);
 }
 
-.annotationLayer .buttonWidgetAnnotation.radioButton input:checked:before {
+.annotationLayer .buttonWidgetAnnotation.radioButton input:checked::before {
   border-radius: 50%;
   height: 50%;
   left: 30%;
@@ -315,8 +339,7 @@
   width: 103%;
 }
 
-.annotationLayer .buttonWidgetAnnotation.checkBox input,
-.annotationLayer .buttonWidgetAnnotation.radioButton input {
+.annotationLayer .buttonWidgetAnnotation:is(.checkBox, .radioButton) input {
   -webkit-appearance: none;
      -moz-appearance: none;
           appearance: none;
@@ -325,6 +348,10 @@
 .annotationLayer .popupTriggerArea {
   height: 100%;
   width: 100%;
+}
+
+.annotationLayer .fileAttachmentAnnotation .popupTriggerArea {
+  position: absolute;
 }
 
 .annotationLayer .popupWrapper {
@@ -396,6 +423,8 @@
   position: absolute;
   width: 100%;
   height: 100%;
+  top: 0;
+  left: 0;
 }
 
 .annotationLayer .annotationTextContent {
@@ -421,7 +450,7 @@
   --xfa-focus-outline: auto;
 }
 
-@media (forced-colors: active) {
+@media screen and (forced-colors: active) {
   :root {
     --xfa-focus-outline: 2px solid CanvasText;
   }
@@ -504,14 +533,8 @@
   outline: 1.5px solid red;
 }
 
-.xfaLayer div {
-  pointer-events: none;
-}
-
-.xfaLayer svg {
-  pointer-events: none;
-}
-
+.xfaLayer div,
+.xfaLayer svg,
 .xfaLayer svg * {
   pointer-events: none;
 }
@@ -562,10 +585,7 @@
   align-items: center;
 }
 
-.xfaLeft > .xfaCaption,
-.xfaLeft > .xfaCaptionForCheckButton,
-.xfaRight > .xfaCaption,
-.xfaRight > .xfaCaptionForCheckButton {
+:is(.xfaLeft, .xfaRight) > :is(.xfaCaption, .xfaCaptionForCheckButton) {
   max-height: 100%;
 }
 
@@ -581,10 +601,7 @@
   align-items: flex-start;
 }
 
-.xfaTop > .xfaCaption,
-.xfaTop > .xfaCaptionForCheckButton,
-.xfaBottom > .xfaCaption,
-.xfaBottom > .xfaCaptionForCheckButton {
+:is(.xfaTop, .xfaBottom) > :is(.xfaCaption, .xfaCaptionForCheckButton) {
   width: 100%;
 }
 
@@ -599,16 +616,14 @@
   height: 100%;
 }
 
-.xfaTextfield:focus,
-.xfaSelect:focus {
+:is(.xfaTextfield, .xfaSelect):focus {
   background-image: none;
   background-color: transparent;
   outline: var(--xfa-focus-outline);
   outline-offset: -1px;
 }
 
-.xfaCheckbox:focus,
-.xfaRadio:focus {
+:is(.xfaCheckbox, .xfaRadio):focus {
   outline: var(--xfa-focus-outline);
 }
 
@@ -623,15 +638,10 @@
 }
 
 .xfaSelect {
-  padding-left: 2px;
-  padding-right: 2px;
   padding-inline: 2px;
 }
 
-.xfaTop > .xfaTextfield,
-.xfaTop > .xfaSelect,
-.xfaBottom > .xfaTextfield,
-.xfaBottom > .xfaSelect {
+:is(.xfaTop, .xfaBottom) > :is(.xfaTextfield, .xfaSelect) {
   flex: 0 1 auto;
 }
 
@@ -734,12 +744,7 @@
   flex: 1;
 }
 
-.xfaNonInteractive input,
-.xfaNonInteractive textarea,
-.xfaDisabled input,
-.xfaDisabled textarea,
-.xfaReadOnly input,
-.xfaReadOnly textarea {
+:is(.xfaNonInteractive, .xfaDisabled, .xfaReadOnly) :is(input, textarea) {
   background: initial;
 }
 
@@ -773,7 +778,7 @@
   }
 }
 
-@media (forced-colors: active) {
+@media screen and (forced-colors: active) {
   :root {
     --focus-outline: solid 3px ButtonText;
     --hover-outline: dashed 3px ButtonText;
@@ -807,6 +812,10 @@
 
 .annotationEditorLayer.inkEditing {
   cursor: var(--editorInk-editing-cursor);
+}
+
+.annotationEditorLayer :is(.freeTextEditor, .inkEditor)[draggable="true"] {
+  cursor: move;
 }
 
 .annotationEditorLayer .selectedEditor {
@@ -871,8 +880,8 @@
   resize: horizontal;
 }
 
-.annotationEditorLayer .freeTextEditor:hover:not(.selectedEditor),
-.annotationEditorLayer .inkEditor:hover:not(.selectedEditor) {
+.annotationEditorLayer
+  :is(.freeTextEditor, .inkEditor):hover:not(.selectedEditor) {
   outline: var(--hover-outline);
 }
 
@@ -907,9 +916,8 @@
   --pdfViewer-padding-bottom: 0;
   --page-margin: 1px auto -8px;
   --page-border: 9px solid transparent;
-  --page-border-image: url(images/shadow.png) 9 9 repeat;
   --spreadHorizontalWrapped-margin-LR: -3.5px;
-  --scale-factor: 1;
+  --loading-icon-delay: 400ms;
 }
 
 @media screen and (forced-colors: active) {
@@ -917,7 +925,6 @@
     --pdfViewer-padding-bottom: 9px;
     --page-margin: 8px auto -1px;
     --page-border: 1px solid CanvasText;
-    --page-border-image: none;
     --spreadHorizontalWrapped-margin-LR: 3.5px;
   }
 }
@@ -932,7 +939,20 @@
   transform: rotate(270deg) translateX(-100%);
 }
 
+#hiddenCopyElement {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  display: none;
+}
+
 .pdfViewer {
+  /* Define this variable here and not in :root to avoid to reflow all the UI
+     when scaling (see #15929). */
+  --scale-factor: 1;
+
   padding-bottom: var(--pdfViewer-padding-bottom);
 }
 
@@ -951,8 +971,6 @@
   position: relative;
   overflow: visible;
   border: var(--page-border);
-  -o-border-image: var(--page-border-image);
-     border-image: var(--page-border-image);
   background-clip: content-box;
   background-color: rgba(255, 255, 255, 1);
 }
@@ -977,11 +995,9 @@
   border: none;
 }
 
-.pdfViewer.scrollHorizontal,
-.pdfViewer.scrollWrapped,
+.pdfViewer:is(.scrollHorizontal, .scrollWrapped),
 .spread {
-  margin-left: 3.5px;
-  margin-right: 3.5px;
+  margin-inline: 3.5px;
   text-align: center;
 }
 
@@ -991,39 +1007,33 @@
 }
 
 .pdfViewer.removePageBorders,
-.pdfViewer.scrollHorizontal .spread,
-.pdfViewer.scrollWrapped .spread {
-  margin-left: 0;
-  margin-right: 0;
+.pdfViewer:is(.scrollHorizontal, .scrollWrapped) .spread {
+  margin-inline: 0;
 }
 
-.spread .page,
-.spread .dummyPage,
-.pdfViewer.scrollHorizontal .page,
-.pdfViewer.scrollWrapped .page,
-.pdfViewer.scrollHorizontal .spread,
-.pdfViewer.scrollWrapped .spread {
+.spread :is(.page, .dummyPage),
+.pdfViewer:is(.scrollHorizontal, .scrollWrapped) :is(.page, .spread) {
   display: inline-block;
   vertical-align: middle;
 }
 
 .spread .page,
-.pdfViewer.scrollHorizontal .page,
-.pdfViewer.scrollWrapped .page {
-  margin-left: var(--spreadHorizontalWrapped-margin-LR);
-  margin-right: var(--spreadHorizontalWrapped-margin-LR);
+.pdfViewer:is(.scrollHorizontal, .scrollWrapped) .page {
+  margin-inline: var(--spreadHorizontalWrapped-margin-LR);
 }
 
 .pdfViewer.removePageBorders .spread .page,
-.pdfViewer.removePageBorders.scrollHorizontal .page,
-.pdfViewer.removePageBorders.scrollWrapped .page {
-  margin-left: 5px;
-  margin-right: 5px;
+.pdfViewer.removePageBorders:is(.scrollHorizontal, .scrollWrapped) .page {
+  margin-inline: 5px;
 }
 
 .pdfViewer .page canvas {
   margin: 0;
   display: block;
+}
+
+.pdfViewer .page canvas .structTree {
+  contain: strict;
 }
 
 .pdfViewer .page canvas[hidden] {
@@ -1035,18 +1045,30 @@
   height: 100%;
 }
 
-.pdfViewer .page .loadingIcon {
+.pdfViewer .page.loadingIcon::after {
   position: absolute;
-  display: block;
-  left: 0;
   top: 0;
-  right: 0;
-  bottom: 0;
+  left: 0;
+  content: "";
+  width: 100%;
+  height: 100%;
   background: url("images/loading-icon.gif") center no-repeat;
+  display: none;
+  /* Using a delay with background-image doesn't work,
+     consequently we use the display. */
+  transition-property: display;
+  transition-delay: var(--loading-icon-delay);
   z-index: 5;
+  contain: strict;
 }
-.pdfViewer .page .loadingIcon.notVisible {
-  background: none;
+
+.pdfViewer .page.loading::after {
+  display: block;
+}
+
+.pdfViewer .page:not(.loading)::after {
+  transition-property: none;
+  display: none;
 }
 
 .pdfViewer.enablePermissions .textLayer span {

@@ -104,6 +104,7 @@ export class TextLayerRenderTask {
     _rootContainer: any;
     _textDivs: any;
     _textContentItemsStr: any;
+    _isOffscreenCanvasSupported: any;
     _fontInspectorEnabled: boolean;
     _reader: any;
     _textDivProperties: any;
@@ -115,7 +116,7 @@ export class TextLayerRenderTask {
         div: null;
         scale: number;
         properties: null;
-        ctx: CanvasRenderingContext2D | OffscreenRenderingContext | null;
+        ctx: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D | null;
     };
     _transform: any[];
     _pageWidth: any;

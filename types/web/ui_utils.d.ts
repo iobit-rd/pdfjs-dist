@@ -91,6 +91,11 @@ export function backtrackBeforeAllVisibleElements(index: number, views: any[], t
  *                   or |items.length| if no such element exists.
  */
 export function binarySearchFirstItem(items: any, condition: any, start?: number): number;
+export namespace CursorTool {
+    const SELECT: number;
+    const HAND: number;
+    const ZOOM: number;
+}
 export const DEFAULT_SCALE: 1;
 export const DEFAULT_SCALE_DELTA: 1.1;
 export const DEFAULT_SCALE_VALUE: "auto";
@@ -203,6 +208,7 @@ export class ProgressBar {
     set percent(arg: number);
     get percent(): number;
     setWidth(viewer: any): void;
+    setDisableAutoFetch(delay?: number): void;
     hide(): void;
     show(): void;
     #private;
@@ -212,10 +218,6 @@ export class ProgressBar {
  * @param {boolean} [replaceInvisible]
  */
 export function removeNullCharacters(str: string, replaceInvisible?: boolean | undefined): string;
-export const RendererType: {
-    CANVAS: string;
-    SVG: string;
-} | null;
 export namespace RenderingStates {
     const INITIAL: number;
     const RUNNING: number;
@@ -263,6 +265,7 @@ export namespace TextLayerMode {
     const DISABLE: number;
     const ENABLE: number;
 }
+export function toggleCheckedBtn(button: any, toggle: any, view?: null): void;
 export const UNKNOWN_SCALE: 0;
 export const VERTICAL_PADDING: 5;
 /**

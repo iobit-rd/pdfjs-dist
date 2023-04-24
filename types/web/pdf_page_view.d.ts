@@ -112,22 +112,14 @@ export class PDFPageView implements IRenderableView {
     pageColors: Object | null;
     eventBus: import("./event_utils").EventBus;
     renderingQueue: import("./pdf_rendering_queue").PDFRenderingQueue | undefined;
-    renderer: any;
     l10n: {
         getLanguage(): Promise<string>;
         getDirection(): Promise<string>;
         get(key: any, args?: null, fallback?: any): Promise<any>;
         translate(element: any): Promise<void>;
     };
-    paintTask: {
-        promise: any;
-        onRenderContinue(cont: any): void;
-        cancel(extraDelay?: number): void;
-        readonly separateAnnots: any;
-    } | null;
-    paintedViewportMap: WeakMap<object, any>;
+    renderTask: any;
     resume: (() => void) | null;
-    _renderError: any;
     _isStandalone: boolean | undefined;
     _annotationCanvasMap: any;
     annotationLayer: AnnotationLayerBuilder | null;
@@ -153,7 +145,6 @@ export class PDFPageView implements IRenderableView {
         keepXfaLayer?: boolean | undefined;
         keepTextLayer?: boolean | undefined;
     }): void;
-    loadingIconDiv: HTMLDivElement | undefined;
     update({ scale, rotation, optionalContentConfigPromise, drawingDelay, }: {
         scale?: number | undefined;
         rotation?: null | undefined;
@@ -181,23 +172,10 @@ export class PDFPageView implements IRenderableView {
     }): void;
     get width(): number;
     get height(): number;
-    getPagePoint(x: any, y: any): Object;
-    draw(): any;
-    paintOnCanvas(canvasWrapper: any): {
-        promise: any;
-        onRenderContinue(cont: any): void;
-        cancel(extraDelay?: number): void;
-        readonly separateAnnots: any;
-    };
+    getPagePoint(x: any, y: any): any[];
+    draw(): Promise<any>;
     canvas: HTMLCanvasElement | undefined;
     outputScale: OutputScale | undefined;
-    paintOnSvg(wrapper: any): {
-        promise: any;
-        onRenderContinue(cont: any): void;
-        cancel(): void;
-        readonly separateAnnots: boolean;
-    };
-    svg: any;
     /**
      * @param {string|null} label
      */

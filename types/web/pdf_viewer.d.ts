@@ -188,11 +188,10 @@ export class PDFViewer {
     downloadManager: import("./interfaces").IDownloadManager | null;
     findController: any;
     _scriptingManager: any;
-    removePageBorders: boolean;
     textLayerMode: number;
     imageResourcesPath: string;
     enablePrintAutoRotate: boolean;
-    renderer: any;
+    removePageBorders: boolean | undefined;
     useOnlyCssZoom: boolean;
     isOffscreenCanvasSupported: boolean;
     maxCanvasPixels: number | undefined;
@@ -275,6 +274,7 @@ export class PDFViewer {
     get firstPagePromise(): any;
     get onePageRendered(): any;
     get pagesPromise(): any;
+    getAllText(): Promise<string | null>;
     /**
      * @param {PDFDocumentProxy} pdfDocument
      */
@@ -305,16 +305,6 @@ export class PDFViewer {
     _previousScrollMode: any;
     _spreadMode: any;
     _scrollUpdate(): void;
-    _setScaleUpdatePages(newScale: any, newValue: any, { noScroll, preset, drawingDelay }: {
-        noScroll?: boolean | undefined;
-        preset?: boolean | undefined;
-        drawingDelay?: number | undefined;
-    }): void;
-    /**
-     * @private
-     */
-    private get _pageWidthScaleFactor();
-    _setScale(value: any, options: any): void;
     /**
      * @param {string} label - The page label.
      * @returns {number|null} The page number corresponding to the page label,
@@ -427,26 +417,38 @@ export class PDFViewer {
     private _getPageAdvance;
     /**
      * Go to the next page, taking scroll/spread-modes into account.
-     * @returns {boolean} Whether navigation occured.
+     * @returns {boolean} Whether navigation occurred.
      */
     nextPage(): boolean;
     /**
      * Go to the previous page, taking scroll/spread-modes into account.
-     * @returns {boolean} Whether navigation occured.
+     * @returns {boolean} Whether navigation occurred.
      */
     previousPage(): boolean;
     /**
-     * Increase the current zoom level one, or more, times.
-     * @param {number} [steps] - Defaults to zooming once.
-     * @param {Object|null} [options]
+     * @typedef {Object} ChangeScaleOptions
+     * @property {number} [drawingDelay]
+     * @property {number} [scaleFactor]
+     * @property {number} [steps]
      */
-    increaseScale(steps?: number | undefined, options?: Object | null | undefined): void;
+    /**
+     * Increase the current zoom level one, or more, times.
+     * @param {ChangeScaleOptions} [options]
+     */
+    increaseScale({ drawingDelay, scaleFactor, steps }?: {
+        drawingDelay?: number | undefined;
+        scaleFactor?: number | undefined;
+        steps?: number | undefined;
+    } | undefined): void;
     /**
      * Decrease the current zoom level one, or more, times.
-     * @param {number} [steps] - Defaults to zooming once.
-     * @param {Object|null} [options]
+     * @param {ChangeScaleOptions} [options]
      */
-    decreaseScale(steps?: number | undefined, options?: Object | null | undefined): void;
+    decreaseScale({ drawingDelay, scaleFactor, steps }?: {
+        drawingDelay?: number | undefined;
+        scaleFactor?: number | undefined;
+        steps?: number | undefined;
+    } | undefined): void;
     get containerTopLeft(): number[];
     /**
      * @param {number} mode - AnnotationEditor mode (None, FreeText, Ink, ...)
