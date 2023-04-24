@@ -19812,13 +19812,10 @@ exports.SVGGraphics = SVGGraphics;
         return;
       }
       if (imgData.bitmap) {
-        const canvas = document.createElement("canvas");
-        const ctx = canvas.transferControlToOffscreen().getContext('2d');
-        canvas.width = imgData.width;
-        canvas.height = imgData.height;
+        const canvas = new OffscreenCanvas(imgData.width, imgData.height);
+        const ctx = canvas.getContext("2d");
         ctx.drawImage(imgData.bitmap, 0, 0);
         imgData.data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
-        canvas.remove();
       }
       this.paintInlineImageXObject(imgData);
     }
