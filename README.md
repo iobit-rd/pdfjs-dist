@@ -12,3 +12,7 @@ latest JavaScript features, please see the `legacy/` folder.
 Please see [this wiki page](https://github.com/mozilla/pdf.js/wiki/Frequently-Asked-Questions#faq-support) for information about supported browsers/environments.
 
 See https://github.com/mozilla/pdf.js for learning and contributing.
+
+## Releases
+
+As of February 2023, releases are pushed directly to **[NPM](https://www.npmjs.com/package/pdfjs-dist)** and may not be visible here.
